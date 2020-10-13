@@ -34,7 +34,7 @@ from src.game_object import GameObject
 #  DUMMY FOR TESTING
 ####################################
 def dummy_update(self):
-    self.Z = (self.Z + 1) % 100
+    self.z = (self.z + 1) % 100
 
 dummy_obj = GameObject({
     "W": 64, "H": 64,
@@ -46,10 +46,8 @@ dummy_obj = GameObject({
 
 def setup(fullscreen=False):
     game_state = {}
-    if fullscreen:
-        game_state["screen"] = pygame.display.set_mode((920, 720), FULLSCREEN)
-    else:
-        game_state["screen"] = pygame.display.set_mode((920, 720))
+    if fullscreen: game_state["screen"] = pygame.display.set_mode((920, 720), FULLSCREEN)
+    else: game_state["screen"] = pygame.display.set_mode((920, 720))
 
     game_state["clock"] = pygame.time.Clock()
         

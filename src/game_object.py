@@ -12,21 +12,17 @@ HOW SPRITES WORK
      will be the first img and frames 3, 4, and 5
      will be the second img. i hope that makes sense
 """
-from pygame import Surface
+from pygame import Surface, Rect
 from pygame.font import SysFont
 
 HEL16 = SysFont("Helvetica", 16)
 
-class GameObject(object):
+class GameObject(Rect):
 
     def __init__(self, template):
-        self.X = 0
-        self.Y = 0
-        self.Z = 0
 
-        self.W = template["W"]
-        self.H = template["H"]
-        
+        Rect.__init__(self, (0, 0), (template["W"], template["H"]))
+        self.z = 0
         self.state = "idle"
         self.frame = 0
         
@@ -38,11 +34,11 @@ class GameObject(object):
         upper = (destination.get_height() // 3) * 2
         lower = destination.get_height()
         
-        X, Y = self.X, (lower - self.Y) - self.H
+        X, Y = self.x, (lower - self.y) - self.h
 
         z_step = (upper - lower) // 100
-        Y += self.Z * z_step
-        X -= (self.Z * z_step) // 2
+        Y += self.z * z_step
+        X -= (self.z * z_step) // 2
         
         destination.blit(self.get_sprite(), (X, Y))
 
@@ -60,7 +56,7 @@ class GameObject(object):
             f -= 1
 
         # if no sprite was found, return a placeholder
-        draft = Surface((self.W, self.H))
+        draft = Surface((self.w, self.h))
         draft.fill((0, 255, 0))
         draft.blit(HEL16.render(self.state, 0, (0, 0, 0)), (0, 0))
         
