@@ -29,20 +29,18 @@ import pygame
 from pygame.locals import *
 pygame.init()
 
-from src.game_object import GameObject
+from src.controller_handler import ControllerHandler
+from src.player import Player
+from src.templates.player_templates import HERFY
 
-#  DUMMY FOR TESTING
-####################################
-def dummy_update(self):
-    self.z = (self.z + 1) % 100
-
-dummy_obj = GameObject({
-    "W": 64, "H": 64,
-    "sprites": {},
-    "update function": dummy_update
-})
-####################################
-
+DEFAULT_BUTTON_MAP = {
+    "left": K_LEFT,
+    "right": K_RIGHT,
+    "up": K_UP,
+    "down": K_DOWN,
+    "btn 0": K_z,
+    "btn 1": K_x,
+}
 
 def setup(fullscreen=False):
     game_state = {}
@@ -50,26 +48,36 @@ def setup(fullscreen=False):
     else: game_state["screen"] = pygame.display.set_mode((920, 720))
 
     game_state["clock"] = pygame.time.Clock()
-        
-    # dummy, just to get something on screen
-    game_state["objects"] = [dummy_obj]
+
+    # temporary for testing
+    game_state["objects"] = []
+    game_state["players"] = [Player(HERFY)]
+
+    game_state["controller handler"] = ControllerHandler()
+    game_state["controller handler"].add_player(game_state["players"][0], DEFAULT_BUTTON_MAP)
     
     return game_state
 
 def run_game(game_state):
     while True:
         game_state["clock"].tick(30)
-        
+
+        game_state["controller handler"].update()
+
+        for player in game_state["players"]:
+            player.update(player)
+            player.update_movement_states()
+            player.apply_state()
+            
         for obj in game_state["objects"]:
             obj.update(obj)
         
         game_state["screen"].fill((255, 255, 255))
+        for player in game_state["players"]:
+            player.draw(game_state["screen"])
+
         for obj in game_state["objects"]:
             obj.draw(game_state["screen"])
         pygame.display.update()
 
-        # just until i have the controller handler started
-        for e in pygame.event.get():
-            if e.type == QUIT: quit()
-            elif e.type == KEYDOWN and e.key == K_ESCAPE: quit()
 
