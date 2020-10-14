@@ -33,13 +33,17 @@ from src.controller_handler import ControllerHandler
 from src.player import Player
 from src.templates.player_templates import HERFY
 
-DEFAULT_BUTTON_MAP = {
+DEFAULT_KEY_MAP = {
     "left": K_LEFT,
     "right": K_RIGHT,
     "up": K_UP,
     "down": K_DOWN,
     "btn 0": K_z,
     "btn 1": K_x,
+}
+DEFAULT_JOY_MAP = {
+    "btn 0": 0,
+    "btn 1": 1,
 }
 
 def setup(fullscreen=False):
@@ -54,7 +58,13 @@ def setup(fullscreen=False):
     game_state["players"] = [Player(HERFY)]
 
     game_state["controller handler"] = ControllerHandler()
-    game_state["controller handler"].add_player(game_state["players"][0], DEFAULT_BUTTON_MAP)
+    for i in range(pygame.joystick.get_count()):
+        joy = pygame.joystick.Joystick(i)
+        joy.init()
+        game_state["controller handler"].add_player(game_state["players"][0], DEFAULT_JOY_MAP, joystick=joy)
+
+    if pygame.joystick.get_count() == 0:
+        game_state["controller handler"].add_player(game_state["players"][0], DEFAULT_KEY_MAP)
     
     return game_state
 

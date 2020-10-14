@@ -57,7 +57,6 @@ class Player(GameObject):
             if self.MOV_DOWN: self.z = max(0, self.z - 1)
 
         if self.state == "jumping":
-            print(self.y)
             self.y += self.y_velocity
             self.y_velocity += self.grav
             
