@@ -42,21 +42,22 @@ class ControllerHandler(object):
                 player.BTN_1 = keys[P["map"]["btn 1"]]
 
             if P["type"] == "joy":
+                check_axis = True
                 joy = P["joy"]
                 if joy.get_numhats():
                     hat = joy.get_hat(0)
+                    if any(hat): check_axis = False
                     player.MOV_LEFT = hat[0] == -1
                     player.MOV_RIGHT = hat[0] == 1
                     player.MOV_UP = hat[1] == 1
                     player.MOV_DOWN = hat[1] == -1
 
-                #         TODO
-                # if joy.get_numaxes():
-                #     ax = joy.get_axis(0)
-                #     player.MOV_LEFT = ax[0] == -1
-                #     player.MOV_RIGHT = ax[0] == 1
-                #     player.MOV_UP = ax[1] == 1
-                #     player.MOV_DOWN = ax[1] == -1
+                
+                if joy.get_numaxes() and check_axis:
+                    player.MOV_LEFT = joy.get_axis(P["map"]["left"]) < -.4
+                    player.MOV_RIGHT = joy.get_axis(P["map"]["right"]) > .4
+                    player.MOV_UP = joy.get_axis(P["map"]["up"]) < -.4
+                    player.MOV_DOWN = joy.get_axis(P["map"]["down"]) > .4
                 
                 player.BTN_0 = joy.get_button(P["map"]["btn 0"])
                 player.BTN_1 = joy.get_button(P["map"]["btn 1"])

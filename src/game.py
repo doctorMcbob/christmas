@@ -42,6 +42,10 @@ DEFAULT_KEY_MAP = {
     "btn 1": K_x,
 }
 DEFAULT_JOY_MAP = {
+    "left": 0,
+    "right": 0,
+    "up": 1,
+    "down": 1,
     "btn 0": 0,
     "btn 1": 1,
 }
