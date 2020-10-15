@@ -32,6 +32,8 @@ pygame.init()
 from src.controller_handler import ControllerHandler
 from src.player import Player
 from src.templates.player_templates import HERFY
+from src.state_machines import herfy
+
 
 DEFAULT_KEY_MAP = {
     "left": K_LEFT,
@@ -59,8 +61,11 @@ def setup(fullscreen=False):
 
     # temporary for testing
     game_state["objects"] = []
+    
     game_state["players"] = [Player(HERFY)]
-
+    game_state["players"][0].set_state_handler(
+        herfy.get_state_handler(game_state["players"][0]))
+    
     game_state["controller handler"] = ControllerHandler()
     for i in range(pygame.joystick.get_count()):
         joy = pygame.joystick.Joystick(i)
@@ -79,9 +84,9 @@ def run_game(game_state):
         game_state["controller handler"].update()
 
         for player in game_state["players"]:
+            player.state_handler.update_states()
+            player.state_handler.apply_states()
             player.update(player)
-            player.update_movement_states()
-            player.apply_state()
             
         for obj in game_state["objects"]:
             obj.update(obj)
