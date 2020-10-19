@@ -12,6 +12,7 @@ HOW SPRITES WORK
      will be the first img and frames 3, 4, and 5
      will be the second img. i hope that makes sense
 """
+import pygame
 from pygame import Surface, Rect
 from pygame.font import SysFont
 
@@ -25,10 +26,20 @@ class GameObject(Rect):
         self.z = 0
         self.state = "idle"
         self.frame = 0
-        
+        self.flag = 0
+
+        self.direction = 1
         self.sprites = template["sprites"]
 
         self.update = template["update function"]
+        self.state_data = template["state data"]
+        self.state_handler = None
+
+        self.hitboxes = template["hitboxes"] 
+
+
+    def set_state_handler(self, state_handler):
+        self.state_handler = state_handler
 
     def draw(self, destination):
         upper = (destination.get_height() // 3) * 2
@@ -41,6 +52,26 @@ class GameObject(Rect):
         X -= (self.z * z_step) // 2
         
         destination.blit(self.get_sprite(), (X, Y))
+
+    def _draw_hitbox(self, destination):
+        # for debug
+        hbox = self.get_hitbox()
+        if not hbox:
+            return
+
+        pos, dim = hbox
+        X_, Y_ = pos
+        
+        upper = (destination.get_height() // 3) * 2
+        lower = destination.get_height()
+        
+        X, Y = X_, (lower - Y_) - self.h
+
+        z_step = (upper - lower) // 100
+        Y += self.z * z_step
+        X -= (self.z * z_step) // 2
+                
+        pygame.draw.rect(destination, (255, 0, 0), pygame.Rect((X, Y), dim))
 
     def get_sprite(self):
         # if state is name of sprite, return it
@@ -62,3 +93,14 @@ class GameObject(Rect):
         
         return draft
 
+    def get_hitbox(self):
+        if self.state in self.hitboxes:
+            pos, dim = self.hitboxes[self.state]
+            X, Y = pos
+            if self.direction == 1:
+                X += self.left
+            if self.direction == -1:
+                X = self.right - X - dim[0]
+            Y = self.y - Y
+            return (X, Y), dim
+        return None

@@ -90,11 +90,12 @@ def run_game(game_state):
             
         for obj in game_state["objects"]:
             obj.update(obj)
-        
+
         game_state["screen"].fill((255, 255, 255))
         for player in game_state["players"]:
             player.draw(game_state["screen"])
-
+            player._draw_hitbox(game_state["screen"])
+            
         for obj in game_state["objects"]:
             obj.draw(game_state["screen"])
         pygame.display.update()

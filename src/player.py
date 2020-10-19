@@ -11,7 +11,6 @@ class Player(GameObject):
         self.speed = template["speed"]
         self.jump_strength = template["jump strength"]
         self.grav = template["grav"]
-        self.direction = 1
         self.jump_direction = 0
         
         self.MOV_LEFT = 0
@@ -21,11 +20,5 @@ class Player(GameObject):
         self.BTN_0 = 0
         self.BTN_1 = 0
         
-        self.jump_start_frames = template["jump start frames"]
-        self.landing_frames = template["landing frames"]
-        
-        self.state_handler = None
 
-    def set_state_handler(self, state_handler):
-        self.state_handler = state_handler
 
