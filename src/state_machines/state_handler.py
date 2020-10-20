@@ -86,6 +86,7 @@ i might add more to this if i need to later :) really fun!
 """
 
 import operator as op
+from random import randint
 
 ops = {
     "+"  : op.add,
@@ -99,6 +100,8 @@ ops = {
     "<=" : op.le,
     ">"  : op.gt,
     ">=" : op.ge,
+
+    "RAND": randint,
 }
 
 class StateHandler(object):
@@ -124,6 +127,9 @@ class StateHandler(object):
         while cmds:
             cmd = cmds.pop()
 
+            if cmd == ".":
+                print(s.pop())
+            
             if cmd.endswith("=") and hasattr(self.player, cmd[:-1]):
                 setattr(self.player, cmd[:-1], s.pop())
 
@@ -156,3 +162,10 @@ class StateHandler(object):
                         continue
                     except ValueError:
                         s.append( cmd )
+
+if __name__ == """__main__""":
+    sh = StateHandler(object(), [], {})
+    while True:
+        cmds = input("> ")
+        if cmds == "quit": quit()
+        sh.resolve(cmds)
