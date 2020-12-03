@@ -2,7 +2,7 @@
 Christmas Beat em up
 working title:
 "The day the whales stole christmas"
-
+"A Bunch Of Animals Kill Santa"
 """
 import sys
 from src.game import setup, run_game

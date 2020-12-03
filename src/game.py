@@ -11,9 +11,11 @@ pygame.init()
 
 from src.controller_handler import ControllerHandler
 from src.player import Player
+from src.enemy import Enemy
 from src.templates.player_templates import HERFY
+from src.templates.enemy_templates import STREET_THUG
 from src.game_world import load_levels
-from src.state_machines import herfy
+from src.state_machines import herfy, street_thug
 
 
 DEFAULT_KEY_MAP = {

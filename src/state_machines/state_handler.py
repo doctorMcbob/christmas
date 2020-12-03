@@ -36,6 +36,23 @@ the string is put on the stack.
 
 keywords and oporators pop arguments off the stack,
 so if you mess up your syntax youll get indexErrors
+--------- KEYWORDS
+.  : prints next item on the stack
+
+dup : duplicate top of the stack
+
+example: + dup P:x
+same as + P:x P:x
+
+swap : swap the next two items on the stack
+
+example: . . swap 2 1
+will print 1 then 2
+
+eat : gobbles the next item on the stack
+
+example: . eat 2 1
+will print 1 
 
 --------- OPORATORS
 oporations function in polish notation
@@ -79,12 +96,20 @@ if player.state == "walk":
     if player.MOV_RIGHT:
         player.x += 1
 
+for an if else logic use dup and not
 
+example: fi ___ if not fi ___ if dup == 1 1
 
+---------- PYTHON OBJECTS
 
-Thinking about enemies now,
-should the state handler get a pointer to the generic game state?
-players, objects, etcetera
+access attributes on the stack with the ":" character
+
+:x P:nearest_player
+player object gets put on the stack, then index the attribute "x"
+
+use "call" to call the next item on the stack as a function
+and put the return value on the stack (including NoneType)
+
 """
 
 import operator as op
@@ -102,6 +127,9 @@ ops = {
     "<=" : op.le,
     ">"  : op.gt,
     ">=" : op.ge,
+
+    "and": op.and_,
+    "or" : op.or_,
 
     "RAND": randint,
 }
@@ -128,20 +156,36 @@ class StateHandler(object):
         cmds = code.split()
         while cmds:
             cmd = cmds.pop()
-
-            if cmd == ".":
-                print(s.pop())
-            
+            # print(cmd, s)
             if cmd.endswith("=") and hasattr(self.player, cmd[:-1]):
                 setattr(self.player, cmd[:-1], s.pop())
 
             elif cmd in ops:
                 s.append(ops[cmd](s.pop(), s.pop()))
 
+            elif cmd == "not": s.append(not s.pop())
+            elif cmd == "abs": s.append(abs(s.pop()))
+                
             elif cmd.startswith("P:") and hasattr(
                     self.player, cmd[2:]):
                 s.append(getattr(self.player, cmd[2:]))
 
+            elif cmd.startswith(":"):
+                s.append(getattr(s.pop(), cmd[1:]))
+
+            elif cmd == "call": s.append(s.pop()())
+                
+            elif cmd == "dup": s.append(s[-1])
+            elif cmd == "swap": s.append(s.pop(-2))
+            elif cmd == "eat": s.pop()
+            elif cmd == ".": print(s.pop())
+
+            elif cmd == "*/":
+                token = None
+                while cmds and token != "/*":
+                    token = cmds.pop()
+                
+            
             elif cmd == "if":
                 if not s.pop():
                     nest = 1
@@ -151,7 +195,7 @@ class StateHandler(object):
                         if token == "fi": nest -= 1
                     continue
 
-            elif cmd == "fi":
+            elif cmd in ["fi", "/*"]:
                 continue
             
             else:

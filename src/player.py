@@ -26,4 +26,5 @@ class Player(GameObject):
         self.BTN_1 = 0
         
 
-
+    def get_x(self):
+        return self.x

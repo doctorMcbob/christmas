@@ -11,6 +11,7 @@ I think this should work...
 """
 from src.templates import level_templates
 from src.sprites import sprites
+from src.enemy import Enemy
 
 class GameWorld(object):
     def __init__(self, template):
@@ -20,6 +21,9 @@ class GameWorld(object):
         self.SCROLL = 0
 
         self.enemies = template["enemies"]
+        for enemy in self.enemies:
+            enemy["template"]["X"], enemy["template"]["Y"], enemy["template"]["Z"] = enemy["position"]
+
         self.bkgimg = sprites.get_sprite(template["background image"])
         
 
@@ -33,17 +37,34 @@ class GameWorld(object):
                 
                 for _player in game_state["players"]:
                     _player.x -= player.speed
+
+                # spawn enemies 
+                for enemy in self.enemies:
+                    if enemy["spawned"]: continue
+                    if enemy["scroll"] <= self.SCROLL:
+                        e = Enemy(enemy["template"])
+                        e.set_state_handler(
+                            enemy["state machine"].get_state_handler(e)
+                        )
+                        game_state["enemies"].append(e)
                 return
 
 
     def draw_screen(self, game_state):
         game_state["screen"].blit(self.bkgimg, (0 - self.SCROLL, 0))
-        for player in game_state["players"]:
-            player.draw(game_state["screen"])
-                
-        for obj in game_state["objects"]:
+        # gather objects
+        objs = game_state["players"] + game_state["enemies"] + game_state["objects"]
+        to_draw = []
+        # sort by z axis
+        while objs:
+            idx = 0
+            for i, obj in enumerate(objs):
+                if obj.z > objs[idx].z: idx = i
+            to_draw.append(objs.pop(idx))
+        # draw
+        for obj in to_draw:
             obj.draw(game_state["screen"])
-    
+        
 
     def run(self, game_state):
         if self.SCROLL < self.LENGTH or game_state["enemies"]:
@@ -58,6 +79,12 @@ class GameWorld(object):
             for obj in game_state["objects"]:
                 obj.update(obj)
 
+            for enemy in game_state["enemies"]:
+                enemy.state_handler.update_states()
+                enemy.state_handler.apply_states()
+                enemy.update_nearest_player(game_state)
+                enemy.update(enemy)
+                
             self.update_scroller(game_state)
             return True
         else: return False

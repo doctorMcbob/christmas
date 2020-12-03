@@ -23,7 +23,7 @@ class GameObject(Rect):
 
     def __init__(self, template):
         Rect.__init__(self, (template["X"], template["Y"]), (template["W"], template["H"]))
-        self.z = 0
+        self.z = 0 if "Z" not in template else template["Z"]
         self.state = "idle"
         self.frame = 0
         self.flag = 0
