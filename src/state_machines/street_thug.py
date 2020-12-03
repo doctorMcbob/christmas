@@ -39,8 +39,12 @@ initstates = [
 
 applystates = {
     "walk": """
+    fi
     fi z= + P:z 1 if > 10 - P:z :z P:nearest_player
     fi z= - P:z 1 if < 10 - P:z :z P:nearest_player
+    fi x= + P:x P:speed if > P:fight_range - P:x :x P:nearest_player
+    fi x= - P:x P:speed if < P:fight_range - P:x :x P:nearest_player
+    if % swap 2 / P:frame 5
     """,
 }
 

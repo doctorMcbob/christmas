@@ -7,7 +7,7 @@ STREET_THUG = {
     "Z"               : 0,
     "W"               : 64,
     "H"               : 96,
-    "speed"           : 5,
+    "speed"           : 2,
     "HP"              : 100,
 
     "fight range"     : 30,
