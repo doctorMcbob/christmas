@@ -3,27 +3,7 @@ game.py
 
 a good place to start
 
-Ive got some notes here, im going to try to write out my thinking as i go.
-
-im going to write a controller handler class, it will get something like
-{
-    "player1": {
-        "character": <Player Object ()>
-        "type": "key" # or "joy" for joystick
-        "map": {
-            "left" : K_left # or joystick event...
-            ...
-        }
-    },
-    "player2": ...,
-    "player3": None,
-    "player4": None,
-}
-
-There will be a player object, it will get a template.
-the template will be the "character": herfy, swankers, beefer, and ernie
-
-player will have methods like draw, and update state
+Here we are again, old friends. Every day is a good day for a christmas adventure.
 """
 import pygame
 from pygame.locals import *
@@ -32,6 +12,7 @@ pygame.init()
 from src.controller_handler import ControllerHandler
 from src.player import Player
 from src.templates.player_templates import HERFY
+from src.game_world import load_levels
 from src.state_machines import herfy
 
 
@@ -52,16 +33,20 @@ DEFAULT_JOY_MAP = {
     "btn 1": 1,
 }
 
-def setup(fullscreen=False):
+def setup(fullscreen=False, FPS=30):
+    """
+    eventually put a game menu here...
+    """
     game_state = {}
     if fullscreen: game_state["screen"] = pygame.display.set_mode((920, 720), FULLSCREEN)
     else: game_state["screen"] = pygame.display.set_mode((920, 720))
 
     game_state["clock"] = pygame.time.Clock()
-
-    # temporary for testing
-    game_state["objects"] = []
+    game_state["FPS"] = FPS
     
+    game_state["objects"] = []
+    game_state["enemies"] = []
+
     game_state["players"] = [Player(HERFY)]
     game_state["players"][0].set_state_handler(
         herfy.get_state_handler(game_state["players"][0]))
@@ -77,27 +62,13 @@ def setup(fullscreen=False):
     
     return game_state
 
+
 def run_game(game_state):
-    while True:
-        game_state["clock"].tick(30)
-
-        game_state["controller handler"].update()
-
-        for player in game_state["players"]:
-            player.state_handler.update_states()
-            player.state_handler.apply_states()
-            player.update(player)
-            
-        for obj in game_state["objects"]:
-            obj.update(obj)
-
-        game_state["screen"].fill((255, 255, 255))
-        for player in game_state["players"]:
-            player.draw(game_state["screen"])
-            player._draw_hitbox(game_state["screen"])
-            
-        for obj in game_state["objects"]:
-            obj.draw(game_state["screen"])
-        pygame.display.update()
-
+    levels = load_levels()
+    for level in levels:
+        #cutscenes?
+        while level.run(game_state):
+            level.draw_screen(game_state)
+            pygame.display.update()
+        #cutscenes?
 

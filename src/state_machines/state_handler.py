@@ -82,7 +82,9 @@ if player.state == "walk":
 
 
 
-i might add more to this if i need to later :) really fun!
+Thinking about enemies now,
+should the state handler get a pointer to the generic game state?
+players, objects, etcetera
 """
 
 import operator as op

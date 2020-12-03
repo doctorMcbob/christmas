@@ -96,12 +96,13 @@ initstates = [
 
 applystates = {
     "walk": """
-    fi x= - P:x P:speed if P:MOV_LEFT
-    fi x= + P:x P:speed if P:MOV_RIGHT
+    fi direction= -1 x= - P:x P:speed if P:MOV_LEFT
+    fi direction= 1 x= + P:x P:speed if P:MOV_RIGHT
     fi z= 0 if < P:z 0
     fi z= 100 if > P:z 100
     fi z= + P:z 1 if P:MOV_UP
     fi z= - P:z 1 if P:MOV_DOWN
+    fi frame= 0 if == P:frame 11
     """,
     # these three are the same...
     # maybe change key to a list, and check

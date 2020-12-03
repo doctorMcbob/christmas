@@ -2,6 +2,8 @@ def default_update(self):
     self.frame += 1
 
 HERFY = {
+    "X"                 : 0,
+    "Y"                 : 0,
     "W"                 : 128,
     "H"                 : 96,
     
@@ -9,14 +11,29 @@ HERFY = {
     "jump strength"     : 20,
     "grav"              : -2,
 
-    "sprites"           : {},
+    "sprites"           : None,
+    "sprites filename"  : "herfy.png",
+    "spritesheet data"  : {
+        "idle"            : ((0, 0),(128, 96)),
+        "walk:0"          : ((128, 0),(128, 96)),
+        "walk:5"         : ((256, 0),(128, 96)),
+        "jumpstart"       : ((384, 0),(128, 96)),
+        "jumping"         : ((512, 0),(128, 96)),
+        "landing"         : ((640, 0),(128, 96)),
+        "jumpattackstart" : ((768, 0),(128, 96)),
+        "jumpattack"      : ((896, 0),(128, 96)),
+        "punchstart"      : ((1024, 0),(128, 96)),
+        "punching"        : ((1152, 0),(128, 96)),
+        "punchstart2"     : ((1280, 0),(128, 96)),
+        "punching2"       : ((1408, 0),(128, 96)),
+    },
     "update function"   : default_update,
 
     "state data"        : {
     # to be indexed in the state machine
     # ( frames, first actionable ) neg 1 if N/A
         "idle"            : (-1, -1),
-        "walk"            : (-1, -1),
+        "walk"            : (10, -1),
         "jumpstart"       : (3, -1),
         "jumping"         : (-1, -1),
         "landing"         : (3, -1),

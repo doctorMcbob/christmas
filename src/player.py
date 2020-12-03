@@ -1,5 +1,5 @@
 from src.game_object import GameObject
-
+from src.sprites import sprites
 
 JUMP_STATE_BLACKLIST = ["jumpstart", "jumping", "landing"]
 
@@ -7,6 +7,11 @@ class Player(GameObject):
     def __init__(self, template):
         GameObject.__init__(self, template)
 
+        self.sprites = sprites.load_spritesheet(
+            template["sprites filename"],
+            template["spritesheet data"],
+            colorkey=(1, 255, 1)
+        )
         self.y_velocity = 0
         self.speed = template["speed"]
         self.jump_strength = template["jump strength"]
