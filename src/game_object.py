@@ -50,6 +50,9 @@ class GameObject(Rect):
     def set_state_handler(self, state_handler):
         self.state_handler = state_handler
 
+    def get_position(self):
+        return (self.x, self.z)
+
     def draw(self, destination):
         upper = (destination.get_height() // 3) * 2
         lower = destination.get_height()

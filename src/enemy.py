@@ -15,9 +15,10 @@ class Enemy(GameObject):
     def update_nearest_player(self, game_state):
         for player in game_state["players"]:
             if player is self.nearest_player: continue
+
             if (self.nearest_player is None or
-                dist(self.position, player.position) <
-                dist(self.position, self.nearest_player.position)):
+                dist(self.get_position(), player.get_position()) <
+                dist(self.get_position(), self.nearest_player.get_position())):
 
                 self.nearest_player = player
 

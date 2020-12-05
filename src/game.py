@@ -12,11 +12,12 @@ pygame.init()
 from src.controller_handler import ControllerHandler
 from src.player import Player
 from src.enemy import Enemy
-from src.templates.player_templates import HERFY
-from src.templates.enemy_templates import STREET_THUG
+from src.templates import player_templates
 from src.game_world import load_levels
-from src.state_machines import herfy, street_thug
+from src import state_machines
 
+GAME_TITLE = "The Whales Kill Christmas"
+VERSION = "0.1"
 
 DEFAULT_KEY_MAP = {
     "left": K_LEFT,
@@ -25,6 +26,7 @@ DEFAULT_KEY_MAP = {
     "down": K_DOWN,
     "btn 0": K_z,
     "btn 1": K_x,
+    "ready": K_RETURN,
 }
 DEFAULT_JOY_MAP = {
     "left": 0,
@@ -33,7 +35,97 @@ DEFAULT_JOY_MAP = {
     "down": 1,
     "btn 0": 0,
     "btn 1": 1,
+    "ready": 9,
 }
+
+CHARACTERS = {
+    "Herfy": {
+        "template": player_templates.HERFY,
+        "state machine": state_machines.herfy,
+    },
+    "Swankers": {
+        "template": player_templates.SWANKERS,
+        "state machine": state_machines.swankers,
+    },
+    "Beefer": {
+        "template": player_templates.BEEFER,
+        "state machine": state_machines.beefer,
+    },
+    "Ernie": {
+        "tempalte": player_templates.ERNIE,
+        "state machine": state_machines.ernie,
+    },
+}
+def boot_menu(game_state):
+    PLAYERS = []
+    CONTROLLERS = []
+    READY = []
+    character_names = CHARACTERS.keys()
+    W, H = game_state["screen"].get_size()
+    pygame.joystick.init()
+    joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
+
+    while True:
+        game_state["screen"].fill((255, 255, 255))
+        game_state["screen"].blit(game_state["fonts"]["HEL64"].render(GAME_TITLE, 0, (0, 0, 0)), (32, 32))
+        game_state["screen"].blit(game_state["fonts"]["HEL16"].render(VERSION, 0, (0, 0, 0)), (32, 96))
+
+        for i, player in enumerate(PLAYERS):
+            if player is None: continue
+            game_state["screen"].blit(game_state["fonts"]["HEL32"].render(str(player), 0, (0, 0, 0)), (32 + i * ((W-64) // 4), 256))
+            if CONTROLLERS[i] == "key":
+                keys = pygame.key.get_pressed()
+                if keys[DEFAULT_KEY_MAP["ready"]]:
+                    READY[i] = not READY[i]
+            else:
+                if CONTROLLERS[i].get_button(DEFAULT_JOY_MAP["ready"]):
+                    READY[i] = not READY[i]
+
+        game_state["controller handler"].update()
+
+        if len(PLAYERS) < 4:
+            if "key" not in CONTROLLERS:
+                if any(pygame.key.get_pressed()):
+                    for name in character_names:
+                        if name in PLAYERS: continue
+                        PLAYERS.append(name)
+                        break
+                    CONTROLLERS.append("key")
+                    READY.append(False)
+            for joy in joysticks:
+                if joy not in CONTROLLERS:
+                    if not joy.get_init():
+                        joy.init()
+                    for btn in range(joy.get_numbuttons()):
+                        if not joy.get_button(btn): continue
+                        for name in character_names:
+                            if name in PLAYERS: continue
+                            PLAYERS.append(name)
+                            break
+                        CONTROLLERS.append(joy)
+                        READY.append(False)
+                        break
+
+        pygame.display.update()
+
+        if READY and all(READY): break
+
+    for i, player in enumerate(PLAYERS):
+        player_obj = Player(CHARACTERS[player]["template"])
+        player_obj.set_state_handler(
+            CHARACTERS[player]["state machine"].get_state_handler(
+                player_obj)
+        )
+        if CONTROLLERS[i] == "key":
+            game_state["controller handler"].add_player(
+                player_obj, DEFAULT_KEY_MAP
+            )
+        else:
+            game_state["controller handler"].add_player(
+                player_obj, DEFAULT_JOY_MAP, CONTROLLERS[i]
+            )
+        game_state["players"].append(player_obj)
+
 
 def setup(fullscreen=False, FPS=30):
     """
@@ -44,27 +136,18 @@ def setup(fullscreen=False, FPS=30):
     else: game_state["screen"] = pygame.display.set_mode((920, 720))
 
     game_state["fonts"] = {
+        "HEL16" : pygame.font.SysFont("Helvetica", 16),
+        "HEL32" : pygame.font.SysFont("Helvetica", 32),
+        "HEL64" : pygame.font.SysFont("Helvetica", 64),
         "HEL128": pygame.font.SysFont("Helvetica", 128)
     }
     game_state["clock"] = pygame.time.Clock()
     game_state["FPS"] = FPS
-    
     game_state["objects"] = []
     game_state["enemies"] = []
-
-    game_state["players"] = [Player(HERFY)]
-    game_state["players"][0].set_state_handler(
-        herfy.get_state_handler(game_state["players"][0]))
-    
+    game_state["players"] = []
     game_state["controller handler"] = ControllerHandler()
-    for i in range(pygame.joystick.get_count()):
-        joy = pygame.joystick.Joystick(i)
-        joy.init()
-        game_state["controller handler"].add_player(game_state["players"][0], DEFAULT_JOY_MAP, joystick=joy)
-
-    if pygame.joystick.get_count() == 0:
-        game_state["controller handler"].add_player(game_state["players"][0], DEFAULT_KEY_MAP)
-    
+    boot_menu(game_state)
     return game_state
 
 
