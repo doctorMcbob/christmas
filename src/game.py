@@ -15,6 +15,7 @@ from src.enemy import Enemy
 from src.templates import player_templates
 from src.game_world import load_levels
 from src import state_machines
+from src.sprites.sprites import get_sprite
 
 GAME_TITLE = "The Whales Kill Christmas"
 VERSION = "0.1"
@@ -42,29 +43,34 @@ CHARACTERS = {
     "Herfy": {
         "template": player_templates.HERFY,
         "state machine": state_machines.herfy,
+        "icon": "herfyicon.png",
     },
     "Swankers": {
         "template": player_templates.SWANKERS,
         "state machine": state_machines.swankers,
+        "icon": "swankersicon.png",
     },
     "Beefer": {
         "template": player_templates.BEEFER,
         "state machine": state_machines.beefer,
+        "icon": "beefericon.png"
     },
     "Ernie": {
-        "tempalte": player_templates.ERNIE,
+        "template": player_templates.ERNIE,
         "state machine": state_machines.ernie,
+        "icon": "ernieicon.png",
     },
 }
 def boot_menu(game_state):
     PLAYERS = []
     CONTROLLERS = []
     READY = []
-    character_names = CHARACTERS.keys()
+    character_names = list(CHARACTERS.keys())
     W, H = game_state["screen"].get_size()
     pygame.joystick.init()
     joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
-
+    for name in character_names:
+        CHARACTERS[name]["icon"] = get_sprite(CHARACTERS[name]["icon"], (1, 255, 1))
     while True:
         game_state["screen"].fill((255, 255, 255))
         game_state["screen"].blit(game_state["fonts"]["HEL64"].render(GAME_TITLE, 0, (0, 0, 0)), (32, 32))
@@ -72,16 +78,46 @@ def boot_menu(game_state):
 
         for i, player in enumerate(PLAYERS):
             if player is None: continue
-            game_state["screen"].blit(game_state["fonts"]["HEL32"].render(str(player), 0, (0, 0, 0)), (32 + i * ((W-64) // 4), 256))
+            game_state["screen"].blit(game_state["fonts"]["HEL32"].render(str(player), 0, (0, 0, 0)), (64 + i * ((W-64) // 4), 256))
+            game_state["screen"].blit(CHARACTERS[player]["icon"], (i * ((W - 64) // 4), 320))
+            pygame.draw.rect(game_state["screen"], [(0, 0, 0), (50, 200, 50)][READY[i]], pygame.Rect(((64 + i * ((W-64) // 4), 648), (128, 64))))
+            game_state["screen"].blit(game_state["fonts"]["HEL32"].render("READY", 0, [(255, 255, 255), (0, 0, 0)][READY[i]]), (66 + i * ((W - 64) // 4), 650))
+            
             if CONTROLLERS[i] == "key":
+                if not pygame.event.peek(KEYDOWN): continue
                 keys = pygame.key.get_pressed()
                 if keys[DEFAULT_KEY_MAP["ready"]]:
                     READY[i] = not READY[i]
+                if keys[DEFAULT_KEY_MAP["right"]]:
+                    idx = (character_names.index(player) + 1) % 4
+                    while character_names[idx] in PLAYERS and idx != i:
+                        idx += 1
+                        idx %= 4
+                    PLAYERS[i] = character_names[idx]
+                if keys[DEFAULT_KEY_MAP["left"]]:
+                    idx = (character_names.index(player) - 1) % 4 
+                    while character_names[idx] in PLAYERS and idx != i:
+                        idx += 1
+                        idx %= 4
+                    PLAYERS[i] = character_names[idx]
             else:
+                if not (pygame.event.peek(JOYHATMOTION) or pygame.event.peek(JOYBUTTONDOWN)): continue
                 if CONTROLLERS[i].get_button(DEFAULT_JOY_MAP["ready"]):
                     READY[i] = not READY[i]
-
+                if CONTROLLERS[i].get_hat(0)[0] == 1 or CONTROLLERS[i].get_axis(DEFAULT_JOY_MAP["right"]) > .4:
+                    idx = (character_names.index(player) + 1) % 4
+                    while character_names[idx] in PLAYERS and idx != i:
+                        idx += 1
+                        idx %= 4
+                    PLAYERS[i] = character_names[idx]
+                if CONTROLLERS[i].get_hat(0)[0] == -1 or CONTROLLERS[i].get_axis(DEFAULT_JOY_MAP["left"]) < -.4:
+                    idx = (character_names.index(player) - 1) % 4 
+                    while character_names[idx] in PLAYERS and idx != i:
+                        idx += 1
+                        idx %= 4
+                    PLAYERS[i] = character_names[idx]
         game_state["controller handler"].update()
+        pygame.event.clear()
 
         if len(PLAYERS) < 4:
             if "key" not in CONTROLLERS:
