@@ -7,16 +7,14 @@ class Player(GameObject):
     def __init__(self, template):
         GameObject.__init__(self, template)
 
-        self.sprites = sprites.load_spritesheet(
-            template["sprites filename"],
-            template["spritesheet data"],
-            colorkey=(1, 255, 1)
-        )
+        self.HP = template["HP"]
+        
         self.y_velocity = 0
         self.speed = template["speed"]
         self.jump_strength = template["jump strength"]
         self.grav = template["grav"]
         self.jump_direction = 0
+        self.weight = template["weight"]
         
         self.MOV_LEFT = 0
         self.MOV_RIGHT = 0
@@ -25,6 +23,16 @@ class Player(GameObject):
         self.BTN_0 = 0
         self.BTN_1 = 0
         
+    def get_hit(self, dmg, direction):
+        self.HP -= dmg
+        if dmg > self.weight:
+            self.direction = direction
+            self.state = "KNOCKDOWN"
+        else:
+            self.state = "HIT"
+        self.frame = 0
 
-    def get_x(self):
-        return self.x
+    def die(self, game_state):
+        game_state["players"].remove(self)
+
+    

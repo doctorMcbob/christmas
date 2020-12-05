@@ -9,6 +9,7 @@ reach a certain point they can be spawned (put in the game_state)
 
 I think this should work...
 """
+import pygame
 from src.templates import level_templates
 from src.sprites import sprites
 from src.enemy import Enemy
@@ -26,7 +27,6 @@ class GameWorld(object):
 
         self.bkgimg = sprites.get_sprite(template["background image"])
         
-
 
     def update_scroller(self, game_state):
         if game_state["enemies"]: return
@@ -46,6 +46,7 @@ class GameWorld(object):
                         e.set_state_handler(
                             enemy["state machine"].get_state_handler(e)
                         )
+                        enemy["spawned"] = 1
                         game_state["enemies"].append(e)
                 return
 
@@ -64,8 +65,32 @@ class GameWorld(object):
         # draw
         for obj in to_draw:
             obj.draw(game_state["screen"])
-        
 
+    def do_hitbox_collision(self, game_state):
+        for player in game_state["players"]:
+            hitbox = player.get_hitbox()
+            if hitbox is None: continue
+            pos, dim, dmg = hitbox
+            for enemy in game_state["enemies"]:
+                if abs(enemy.z - player.z) > 10: continue
+                if enemy.colliderect(pygame.Rect(pos, dim)):
+                    enemy.get_hit(dmg, player.direction)
+                    if enemy.HP < 0:
+                        game_state["enemies"].remove(enemy)
+
+
+        for enemy in game_state["enemies"]:
+            hitbox = enemy.get_hitbox()
+            if hitbox is None: continue
+            pos, dim, dmg = hitbox
+            for player in game_state["players"]:
+                if abs(enemy.z - player.z) > 10: continue
+                if player.colliderect(pygame.Rect(pos, dim)):
+                    player.get_hit(dmg, enemy.direction)
+                    if player.HP < 0:
+                        player.die(game_state)
+
+    
     def run(self, game_state):
         if self.SCROLL < self.LENGTH or game_state["enemies"]:
             game_state["clock"].tick(game_state["FPS"])
@@ -84,7 +109,8 @@ class GameWorld(object):
                 enemy.state_handler.apply_states()
                 enemy.update_nearest_player(game_state)
                 enemy.update(enemy)
-                
+
+            self.do_hitbox_collision(game_state)
             self.update_scroller(game_state)
             return True
         else: return False

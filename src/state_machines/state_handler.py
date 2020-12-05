@@ -156,7 +156,7 @@ class StateHandler(object):
         cmds = code.split()
         while cmds:
             cmd = cmds.pop()
-            # print(cmd, s)
+#            print(cmd, s)
             if cmd.endswith("=") and hasattr(self.player, cmd[:-1]):
                 setattr(self.player, cmd[:-1], s.pop())
 

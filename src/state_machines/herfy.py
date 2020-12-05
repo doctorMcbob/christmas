@@ -92,6 +92,20 @@ initstates = [
       state= punching2 frame=0 flag=0
       """
     ],
+    [ lambda player: player.state == "HIT" and state_over(player),
+      """
+      fi state= idle if not
+      fi state= jumping if dup == P:y 0
+      frame= 0
+      """
+    ],
+    [ lambda player: player.state == "KNOCKDOWN" and state_over(player),
+      """
+      fi state= idle if not
+      fi state= jumping if dup == P:y 0
+      frame= 0
+      """
+    ]
 ]
 
 applystates = {
@@ -123,11 +137,12 @@ applystates = {
     y_velocity= + P:y_velocity P:grav
     y= + P:y P:y_velocity
     """,
-    #---
-    
     "punching" : """
     fi flag= 1 if == P:BTN_1 0
-    """
+    """,
+    "KNOCKDOWN":"""
+    x= + P:x * * 2 P:speed P:direction
+    """,
 }
 
 def get_state_handler(player):

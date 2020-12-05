@@ -43,6 +43,9 @@ def setup(fullscreen=False, FPS=30):
     if fullscreen: game_state["screen"] = pygame.display.set_mode((920, 720), FULLSCREEN)
     else: game_state["screen"] = pygame.display.set_mode((920, 720))
 
+    game_state["fonts"] = {
+        "HEL128": pygame.font.SysFont("Helvetica", 128)
+    }
     game_state["clock"] = pygame.time.Clock()
     game_state["FPS"] = FPS
     
@@ -65,6 +68,16 @@ def setup(fullscreen=False, FPS=30):
     return game_state
 
 
+def game_over(game_state, level):
+    t = 0 - game_state["screen"].get_height()
+    while level.run(game_state):
+        if t < 0: t += 6
+        else: t = 0
+        pygame.draw.rect(game_state["screen"], (255, 0, 0) ,pygame.Rect((0, t), game_state["screen"].get_size()))
+        game_state["screen"].blit(game_state["fonts"]["HEL128"].render("Game Over", 0, (0, 0, 0)), (64, t + 128))
+        pygame.display.update()
+
+
 def run_game(game_state):
     levels = load_levels()
     for level in levels:
@@ -72,5 +85,7 @@ def run_game(game_state):
         while level.run(game_state):
             level.draw_screen(game_state)
             pygame.display.update()
+            if not game_state["players"]:
+                game_over(game_state, level)
         #cutscenes?
 

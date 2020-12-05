@@ -9,7 +9,9 @@ class Enemy(GameObject):
         self.nearest_player = None
         self.fight_range = template["fight range"]
         self.speed = template["speed"]
-        
+        self.HP = template["HP"]
+        self.weight = template["weight"]
+
     def update_nearest_player(self, game_state):
         for player in game_state["players"]:
             if player is self.nearest_player: continue
@@ -29,3 +31,15 @@ class Enemy(GameObject):
             return self.left - self.nearest_player.right <= self.fight_range
         else:
             return self.nearest_player.left - self.right <= self.fight_range 
+
+    def get_hit(self, dmg, direction):
+        self.HP -= dmg
+        if dmg > self.weight:
+            self.direction = direction
+            self.state = "KNOCKDOWN"
+        else:
+            self.state = "HIT"
+        self.frame = 0
+
+    def die(self, game_state):
+        game_state["enemies"].remove(self)

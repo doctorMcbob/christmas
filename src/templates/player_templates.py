@@ -10,6 +10,9 @@ HERFY = {
     "speed"             : 5,
     "jump strength"     : 20,
     "grav"              : -2,
+    "weight"            : 18,
+
+    "HP"                : 5000,
 
     "sprites"           : None,
     "sprites filename"  : "herfy.png",
@@ -43,14 +46,16 @@ HERFY = {
         "punching"        : (8, 3),
         "punchstart2"     : (2, -1),
         "punching2"       : (10, 5),
+        "HIT"             : (25, -1),
+        "KNOCKDOWN"       : (45, -1),
     },
     "hitboxes" : {
         # state : rect relative to player position
         # (p.x + x, p.y + y, w, h)
         # when direction is flipped, adjust based on
         # top right instead of top left
-        "punching"    : ((120, 40), (40, 30)),
-        "punching2"   : ((120, 20), (50, 50)),
-        "jumpattack"  : ((-10, -5), (150, 110)),
+        "punching"    : ((120, 40), (40, 30), 10),
+        "punching2"   : ((120, 20), (50, 50), 10),
+        "jumpattack"  : ((-10, -5), (150, 110), 25),
     }
 }
