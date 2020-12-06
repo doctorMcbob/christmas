@@ -33,10 +33,16 @@ STREET_THUG = {
         "walk"       : (-1, -1),
         "punchstart" : (5, -1),
         "punching"   : (10, -1),
+        "punchstart2": (6, -1),
+        "punching2"  : (10, -1),
+        "punchstart3": (10, -1),
+        "punching3"  : (15, -1),
         "HIT"        : (15, -1),
         "KNOCKDOWN"  : (25, -1),
     },
     "hitboxes"        : {
         "punching"  : ((60, 40), (40, 30), 10),
+        "punching2" : ((60, 40), (40, 30), 10),
+        "punching3" : ((60, 40), (40, 30), 20),
     }
 }
