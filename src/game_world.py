@@ -73,7 +73,7 @@ class GameWorld(object):
             pos, dim, dmg = hitbox
             for enemy in game_state["enemies"]:
                 if abs(enemy.z - player.z) > 10: continue
-                if enemy.colliderect(pygame.Rect(pos, dim)):
+                if enemy.colliderect(pygame.Rect(pos, dim)) and enemy.state != "KNOCKBACK":
                     enemy.get_hit(dmg, player.direction)
                     if enemy.HP < 0:
                         game_state["enemies"].remove(enemy)
@@ -85,7 +85,7 @@ class GameWorld(object):
             pos, dim, dmg = hitbox
             for player in game_state["players"]:
                 if abs(enemy.z - player.z) > 10: continue
-                if player.colliderect(pygame.Rect(pos, dim)):
+                if player.colliderect(pygame.Rect(pos, dim)) and enemy.state != "KNOCKBACK":
                     player.get_hit(dmg, enemy.direction)
                     if player.HP < 0:
                         player.die(game_state)

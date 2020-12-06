@@ -23,8 +23,8 @@ STREET_THUG = {
         "punchstart"     : ((384, 0), (128, 96)),
         "punching"       : ((512, 0), (128, 96)),
         "HIT"            : ((640, 0), (128, 96)),
-        "NKOCKDOWN:0"    : ((640, 0), (128, 96)),
-        "KNOCKDOWN:10"   : ((768, 0), (128, 96)),
+        "KNOCKDOWN:0"    : ((768, 0), (128, 96)),
+        "KNOCKDOWN:10"   : ((896, 0), (128, 96)),
     },
     "update function" : default_update,
 
