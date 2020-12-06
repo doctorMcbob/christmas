@@ -62,12 +62,16 @@ CHARACTERS = {
     },
 }
 def boot_menu(game_state):
+    """
+    problably the least generic code in the project so far, but I dont mind a scripted menu
+    """
     PLAYERS = []
     CONTROLLERS = []
     READY = []
     character_names = list(CHARACTERS.keys())
     W, H = game_state["screen"].get_size()
-    pygame.joystick.init()
+    if not pygame.joystick.get_init():
+        pygame.joystick.init()
     joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
     for name in character_names:
         CHARACTERS[name]["icon"] = get_sprite(CHARACTERS[name]["icon"], (1, 255, 1))
@@ -78,6 +82,7 @@ def boot_menu(game_state):
 
         for i, player in enumerate(PLAYERS):
             if player is None: continue
+
             game_state["screen"].blit(game_state["fonts"]["HEL32"].render(str(player), 0, (0, 0, 0)), (64 + i * ((W-64) // 4), 256))
             game_state["screen"].blit(CHARACTERS[player]["icon"], (i * ((W - 64) // 4), 320))
             pygame.draw.rect(game_state["screen"], [(0, 0, 0), (50, 200, 50)][READY[i]], pygame.Rect(((64 + i * ((W-64) // 4), 648), (128, 64))))
@@ -163,12 +168,13 @@ def boot_menu(game_state):
         game_state["players"].append(player_obj)
 
 
-def setup(fullscreen=False, FPS=30):
+def setup(screen=None, fullscreen=False, FPS=30):
     """
-    eventually put a game menu here...
+    added screen as optional argument so this can be called again after game over
     """
     game_state = {}
-    if fullscreen: game_state["screen"] = pygame.display.set_mode((920, 720), FULLSCREEN)
+    if screen: game_state["screen"] = screen
+    elif fullscreen: game_state["screen"] = pygame.display.set_mode((920, 720), FULLSCREEN)
     else: game_state["screen"] = pygame.display.set_mode((920, 720))
 
     game_state["fonts"] = {
@@ -198,13 +204,14 @@ def game_over(game_state, level):
 
 
 def run_game(game_state):
-    levels = load_levels()
-    for level in levels:
-        #cutscenes?
-        while level.run(game_state):
-            level.draw_screen(game_state)
-            pygame.display.update()
-            if not game_state["players"]:
-                game_over(game_state, level)
+    while True:
+        levels = load_levels()
+        for level in levels:
+            #cutscenes?
+            while level.run(game_state):
+                level.draw_screen(game_state)
+                pygame.display.update()
+                if not game_state["players"]:
+                    game_over(game_state, level)
         #cutscenes?
 
