@@ -102,7 +102,7 @@ initstates = [
       """
       fi state= idle if not
       fi state= jumping if dup != P:y 0
-      . P:y . out_of_hitstun
+      . P:y
       frame= 0
       """
     ],

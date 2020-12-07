@@ -25,6 +25,32 @@ initstates = [
     ], [
         lambda piece: piece.state == "punching" and state_over(piece),
         """
+        fi state= idle if not
+        fi state= punchstart2 if dup
+        call P:punch_distance
+        frame= 0 
+        """
+    ], [
+        lambda piece: piece.state == "punchstart2" and state_over(piece),
+        """
+        frame= 0 state= punching2
+        """
+    ], [
+        lambda piece: piece.state == "punching2" and state_over(piece),
+        """
+        fi state= idle if not
+        fi state= punchstart3 if dup
+        call P:punch_distance
+        frame= 0 
+        """
+    ], [
+        lambda piece: piece.state == "punchstart3" and state_over(piece),
+        """
+        frame= 0 state= punching3
+        """
+    ], [
+        lambda piece: piece.state == "punching3" and state_over(piece),
+        """
         frame= 0 state= idle
         """
     ], [
