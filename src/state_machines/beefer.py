@@ -1,5 +1,5 @@
 """
-hey man, it makes sense to me so shove it
+He's a bear he's a bear he's a big ol' bear
 
 if your looking for documentation,
 i wrote a bit in state_handler.py
@@ -9,8 +9,8 @@ from src.state_machines.state_handler import StateHandler
 state_over = lambda player: player.frame >= player.state_data[player.state][0]
 player_actionable = lambda player: player.frame >= player.state_data[player.state][1]
 
-JUMP_STATE_BLACKLIST = ["jumpstart", "jumping", "landing", "punchstart", "punching", "punchstart2", "punching2", "jumpattackstart", "jumpattack", "HIT", "KNOCKDOWN"]
-PUNCH_STATE_BLACKLIST = ["jumpstart", "jumping", "landing", "punchstart", "punching", "punchstart2", "punching2", "jumpattackstart", "jumpattack", "run", "HIT", "KNOCKDOWN"]
+JUMP_STATE_BLACKLIST = ["jumpstart", "jumping", "landing", "punchstart", "punching_0", "punching_1", "jumpattackstart", "jumpattack", "HIT", "KNOCKDOWN"]
+PUNCH_STATE_BLACKLIST = ["jumpstart", "jumping", "landing", "punchstart", "punching_0", "punching_1", "jumpattackstart", "jumpattack", "run", "HIT", "KNOCKDOWN"]
 
 initstates = [
     [ lambda player: player.state == "idle" and any([player.MOV_LEFT, player.MOV_RIGHT, player.MOV_UP, player.MOV_DOWN]) and not player.flag,
@@ -79,25 +79,22 @@ initstates = [
 
     [ lambda player: player.state == "punchstart" and state_over(player),
       """
-      state= punching frame= 0 flag= 0
+      state= punching_0 frame= 0 flag= 0
       """
     ],
 
-    [ lambda player: player.state in ["punching", "punching2"] and state_over(player),
+    [ lambda player: player.state == "punching_0" and state_over(player),
+      """
+      state= punching_1 frame= 0
+      """
+    ],
+
+    [ lambda player: player.state  == "punching_1" and state_over(player),
       """
       state= idle frame= 0
       """
     ],
-    [ lambda player: player.state == "punching" and player.flag and player_actionable(player) and player.BTN_1,
-      """
-      state= punchstart2 frame= 0
-      """
-    ],
-    [ lambda player: player.state == "punchstart2" and state_over(player),
-      """
-      state= punching2 frame= 0 flag= 0
-      """
-    ],
+
     [ lambda player: player.state == "HIT" and state_over(player),
       """
       fi state= idle if not
@@ -153,9 +150,6 @@ applystates = {
     x= + P:x * P:speed P:jump_direction
     y_velocity= + P:y_velocity P:grav
     y= + P:y P:y_velocity
-    """,
-    "punching" : """
-    fi flag= 1 if == P:BTN_1 0
     """,
     "KNOCKDOWN":"""
     x= + P:x * * 2 P:speed P:direction
