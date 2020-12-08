@@ -13,6 +13,7 @@ import pygame
 from src.templates import level_templates
 from src.sprites import sprites
 from src.enemy import Enemy
+from src.state_machines import ENEMY_STATE_MACHINE_MAP
 
 class GameWorld(object):
     def __init__(self, template):
@@ -23,6 +24,8 @@ class GameWorld(object):
 
         self.enemies = template["enemies"]
         for enemy in self.enemies:
+            name = enemy["template"]["name"]
+            enemy["state machine"] = ENEMY_STATE_MACHINE_MAP[name]
             enemy["template"]["X"], enemy["template"]["Y"], enemy["template"]["Z"] = enemy["position"]
 
         self.bkgimg = sprites.get_sprite(template["background image"])
