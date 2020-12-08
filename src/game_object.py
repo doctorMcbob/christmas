@@ -65,7 +65,7 @@ class GameObject(Rect):
 
         X += self.sprite_offset[0]
         Y += self.sprite_offset[1]
-        
+        self._draw_hitbox(destination)
         destination.blit(self.get_sprite(), (X, Y))
 
     def _draw_hitbox(self, destination):

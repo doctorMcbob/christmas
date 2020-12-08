@@ -1,5 +1,5 @@
 """
-hey man, it makes sense to me so shove it
+I love this FUCKING cat
 
 if your looking for documentation,
 i wrote a bit in state_handler.py
@@ -144,13 +144,13 @@ applystates = {
     y_velocity= + P:y_velocity P:grav
     y= + P:y P:y_velocity
     """,
-    "jumpattackstart" : """
-    x= + P:x * P:speed P:jump_direction
-    y_velocity= + P:y_velocity P:grav
-    y= + P:y P:y_velocity
-    """,
+#    "jumpattackstart" : """
+#    x= + P:x * P:speed P:jump_direction
+#    y_velocity= + P:y_velocity P:grav
+#    y= + P:y P:y_velocity
+#    """,
     "jumpattack": """
-    x= + P:x * P:speed P:jump_direction
+    x= + P:x * * 2 P:speed P:direction
     y_velocity= + P:y_velocity P:grav
     y= + P:y P:y_velocity
     """,
